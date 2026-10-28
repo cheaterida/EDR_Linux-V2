@@ -1,0 +1,66 @@
+{
+  "hostname": "VM",
+  "kernel": "6.17.0-23-generic",
+  "arch": "amd64",
+  "os": "Ubuntu 24.04.2 LTS",
+  "uid": 0,
+  "checks": [
+    {
+      "name": "btf_available",
+      "status": "pass",
+      "detail": "/sys/kernel/btf/vmlinux (6916923 bytes)"
+    },
+    {
+      "name": "bpffs_mounted",
+      "status": "pass",
+      "detail": "/sys/fs/bpf"
+    },
+    {
+      "name": "securityfs_mounted",
+      "status": "pass",
+      "detail": "/sys/kernel/security"
+    },
+    {
+      "name": "bpf_lsm_active",
+      "status": "fail",
+      "detail": "bpf not in LSM list (lockdown,capability,landlock,yama,apparmor,ima,evm); enable via lsm=...,bpf boot param"
+    },
+    {
+      "name": "kernel_config",
+      "status": "pass",
+      "detail": "all required options present"
+    },
+    {
+      "name": "cgroup_v2",
+      "status": "pass",
+      "detail": "cgroup2fs"
+    },
+    {
+      "name": "unprivileged_bpf",
+      "status": "pass",
+      "detail": "disabled=2 (root only)"
+    },
+    {
+      "name": "fanotify_limits",
+      "status": "pass",
+      "detail": "max_user_marks=31812"
+    },
+    {
+      "name": "kprobes_available",
+      "status": "pass",
+      "detail": "kprobe_events present"
+    },
+    {
+      "name": "pidfd_support",
+      "status": "pass",
+      "detail": "pidfd_open expected (kernel >= 5.3)"
+    },
+    {
+      "name": "build_toolchain",
+      "status": "pass",
+      "detail": "found: clang, bpftool, gcc"
+    }
+  ],
+  "probe_host": "192.168.214.144",
+  "probed_at": "2026-10-11"
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "LAB-FANOTIFY-TMP",
+      "description": "lab: deny opens under /tmp/edr-watch/ (datapath FAN_OPEN_PERM)",
+      "category": "file",
+      "severity": "high",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 1,
+      "when": { "op": "starts_with", "field": "file_path", "value": "/tmp/edr-watch/" }
+    }
+  ]
+}

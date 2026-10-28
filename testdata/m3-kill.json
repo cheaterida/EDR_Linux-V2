@@ -1,0 +1,14 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "M3-KILL-VICTIM",
+      "description": "M3 smoke: kill a process named edr-victim (via datapath pidfd)",
+      "category": "process",
+      "severity": "critical",
+      "decision": "block",
+      "action": "kill",
+      "when": { "op": "eq", "field": "process_name", "value": "edr-victim" }
+    }
+  ]
+}

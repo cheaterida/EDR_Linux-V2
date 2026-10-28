@@ -1,0 +1,26 @@
+[Unit]
+Description=EDR HA orchestrator (split A/B failover)
+Documentation=file:/opt/edr/docs/DEPLOY-LAB.md
+After=network.target
+
+[Service]
+Type=simple
+Environment=EDR_INSTANCE=edr-a
+Environment=EDR_PEER=edr-b
+EnvironmentFile=-/etc/edr/orchestrator.env
+ExecStart=/opt/edr/bin/edr-orchestrator \
+    --instance $EDR_INSTANCE --peer $EDR_PEER \
+    --run-dir /run/edr \
+    --interval 1s --suspect-after 3 --down-after 5 \
+    --lease-ttl 10s --restart-cooldown 30s \
+    --restart-cmd "/bin/systemctl restart edr-agent"
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=edr
+RuntimeDirectoryMode=0750
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/run/edr
+
+[Install]
+WantedBy=multi-user.target

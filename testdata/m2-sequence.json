@@ -1,0 +1,19 @@
+{
+  "schema_version": "v2.0",
+  "sequences": [
+    {
+      "id": "M2-SEQ-SLEEP-ID",
+      "description": "M2 smoke: sleep followed by id within 30s (any pid)",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "within_sec": 30,
+      "same_pid": false,
+      "stages": [
+        { "op": "eq", "field": "process_name", "value": "sleep" },
+        { "op": "eq", "field": "process_name", "value": "id" }
+      ]
+    }
+  ]
+}

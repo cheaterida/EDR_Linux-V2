@@ -1,0 +1,23 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "DBG-EXEC-ANY",
+      "description": "debug: log every exec",
+      "category": "process",
+      "severity": "low",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "contains", "field": "process_name", "value": "" }
+    },
+    {
+      "id": "DBG-FILE-CREATE",
+      "description": "debug: log every file create",
+      "category": "file",
+      "severity": "low",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "eq", "field": "file_op", "value": "create" }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Host-specific generated BPF header (regenerate with: make vmlinux)
+internal/bpf/probes/vmlinux.h
+
+# Build artifacts
+dist/
+*.test
+
+# Rust
+datapath/target/

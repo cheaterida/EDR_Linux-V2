@@ -1,0 +1,60 @@
+{
+  "schema_version": "v2.0",
+  "self_protection": {
+    "enabled": true,
+    "enforce_mode": ""
+  },
+  "rules": [
+    {
+      "id": "DEMO-REVERSE-SHELL-BASH",
+      "description": "bash opening an outbound socket via /dev/tcp is a classic reverse shell",
+      "category": "process",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 10,
+      "effect": ["audit"],
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "process_name", "value": "bash" },
+          { "op": "contains", "field": "cmdline", "value": "/dev/tcp/" }
+        ]
+      }
+    },
+    {
+      "id": "DEMO-CURL-PIPE-SHELL",
+      "description": "curl/wget piped into a shell",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 20,
+      "effect": ["audit"],
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "in", "field": "process_name", "value": "curl,wget" },
+          { "op": "regex", "field": "cmdline", "value": "(bash|sh)\\s*$" }
+        ]
+      }
+    },
+    {
+      "id": "DEMO-SUSPICIOUS-TMP-EXEC",
+      "description": "executable dropped under /tmp",
+      "category": "file",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 30,
+      "effect": ["audit"],
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "create" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[Unit]
+Description=EDR agent (CO-RE eBPF host security sensor)
+Documentation=file:/opt/edr/docs/DEPLOY-LAB.md
+After=network.target edr-datapath.service
+Wants=edr-datapath.service
+
+[Service]
+Type=simple
+# EDR_OPTIONS lets you toggle enforcement without editing the unit. Default
+# (empty) = audit mode. Recommended hardened host example:
+#   EDR_OPTIONS=--enforce --self-protect --bpf-guard --lsm --self-check-dir /opt/edr \
+#     --datapath-socket /run/edr/datapath.sock --nft-enabled \
+#     --center-url http://127.0.0.1:7080/v0/center/ingest \
+#     --center-secret-file /etc/edr/center.secret
+# --self-protect blocks signals/memory access targeting the agent; --bpf-guard
+# blocks tampering with the agent's own BPF objects; --lsm attaches the optional
+# BPF-LSM layer (needs `bpf` in the kernel `lsm=` boot param); --self-check-dir
+# makes the integrity sentinel watch the install directory.
+# Optional for hardened hosts that never load kernel modules at runtime:
+#   add --strict-modules (blocks non-agent init_module/finit_module).
+EnvironmentFile=-/etc/edr/agent.env
+ExecStart=/opt/edr/bin/edr-agent --bpf \
+    --policy /etc/edr/policy.json \
+    --event-path /var/lib/edr/events.jsonl \
+    --anchor-file /var/lib/edr/anchor.json \
+    --audit-key-file /etc/edr/audit.key \
+    --socket /run/edr/agent.sock \
+    --admin-key /etc/edr/admin.key \
+    --quarantine-dir /var/lib/edr/quarantine \
+    --notify-config /etc/edr/notify.json \
+    --self-check-dir /opt/edr \
+    $EDR_OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=3
+RuntimeDirectory=edr
+RuntimeDirectoryMode=0750
+StateDirectory=edr
+StateDirectoryMode=0750
+LimitNOFILE=1048576
+# eBPF + fanotify require broad privileges; only safe hardening is applied.
+ProtectClock=yes
+ProtectKernelLogs=yes
+# NOTE: with --self-protect active, SIGTERM is blocked by the agent's BPF
+# self-protection, so `systemctl stop` cannot work. Use the controlled API:
+#   edrctl admin token shutdown --key-file /etc/edr/admin.key
+#   edrctl --socket /run/edr/agent.sock shutdown --token <TOKEN>
+
+[Install]
+WantedBy=multi-user.target

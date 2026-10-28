@@ -1,0 +1,332 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "HOST-SELF-PROTECT-TAMPER",
+      "description": "attempt to tamper with the EDR agent (signals/memory/own BPF objects)",
+      "category": "process",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 5,
+      "when": { "op": "eq", "field": "event_kind", "value": "self_protect" }
+    },
+    {
+      "id": "HOST-ROOTKIT-HIDDEN-PROCESS",
+      "description": "process seen by probes but hidden from /proc (DKOM rootkit)",
+      "category": "rootkit",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 3,
+      "when": { "op": "eq", "field": "rootkit_type", "value": "hidden_process" }
+    },
+    {
+      "id": "HOST-ROOTKIT-HIDDEN-MODULE",
+      "description": "kernel module hidden from /proc/modules",
+      "category": "rootkit",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 3,
+      "when": { "op": "eq", "field": "rootkit_type", "value": "hidden_module" }
+    },
+    {
+      "id": "HOST-ROOTKIT-HIDDEN-CONNECTION",
+      "description": "network connection hidden from /proc/net/tcp",
+      "category": "rootkit",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 3,
+      "when": { "op": "eq", "field": "rootkit_type", "value": "hidden_connection" }
+    },
+    {
+      "id": "HOST-ROOTKIT-SYSCALL-HOOK",
+      "description": "key syscall address outside kernel .text (syscall-table hook)",
+      "category": "rootkit",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 3,
+      "when": { "op": "eq", "field": "rootkit_type", "value": "syscall_hook" }
+    },
+    {
+      "id": "HOST-REVSHELL-DEVTCP",
+      "description": "bash reverse shell via /dev/tcp",
+      "category": "process",
+      "severity": "critical",
+      "decision": "block",
+      "action": "kill",
+      "priority": 10,
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "in", "field": "process_name", "value": "bash,sh,dash" },
+          { "op": "contains", "field": "cmdline", "value": "/dev/tcp/" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-CURL-PIPE-SHELL",
+      "description": "download piped into a shell",
+      "category": "process",
+      "severity": "high",
+      "decision": "block",
+      "action": "kill",
+      "priority": 20,
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "in", "field": "process_name", "value": "curl,wget" },
+          { "op": "regex", "field": "cmdline", "value": "\\|\\s*(ba)?sh" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-EXEC-FROM-TMP",
+      "description": "execution from world-writable locations",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 50,
+      "when": {
+        "op": "or",
+        "args": [
+          { "op": "starts_with", "field": "process_path", "value": "/tmp/" },
+          { "op": "starts_with", "field": "process_path", "value": "/dev/shm/" },
+          { "op": "starts_with", "field": "process_path", "value": "/var/tmp/" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-LD-PRELOAD",
+      "description": "process loaded with LD_PRELOAD set",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 40,
+      "when": { "op": "contains", "field": "environ", "value": "LD_PRELOAD=" }
+    },
+    {
+      "id": "HOST-PRIVESC-SETUID",
+      "description": "setuid() transition observed",
+      "category": "process",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "priority": 70,
+      "when": { "op": "eq", "field": "privtype", "value": "setuid" }
+    },
+    {
+      "id": "HOST-PRIVESC-SETGID",
+      "description": "setgid() transition observed",
+      "category": "process",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "priority": 71,
+      "when": { "op": "eq", "field": "privtype", "value": "setgid" }
+    },
+    {
+      "id": "HOST-PRIVESC-CAPSET",
+      "description": "capset() capability change observed",
+      "category": "process",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "priority": 72,
+      "when": { "op": "eq", "field": "privtype", "value": "capset" }
+    },
+    {
+      "id": "HOST-MASQUERADE-KTHREAD",
+      "description": "userspace process claiming a kernel-thread name",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 30,
+      "when": { "op": "eq", "field": "event_kind", "value": "masquerade" }
+    },
+    {
+      "id": "HOST-CHMOD-SUID",
+      "description": "SUID bit being set",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 45,
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "process_name", "value": "chmod" },
+          { "op": "contains", "field": "cmdline", "value": "+s" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-SETCAP",
+      "description": "file capabilities being granted",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 46,
+      "when": { "op": "eq", "field": "process_name", "value": "setcap" }
+    },
+    {
+      "id": "HOST-NSENTER",
+      "description": "namespace entry (common container escape)",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 47,
+      "when": { "op": "eq", "field": "process_name", "value": "nsenter" }
+    },
+    {
+      "id": "HOST-ANTIFORENSIC",
+      "description": "log tampering / anti-forensics",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 48,
+      "when": {
+        "op": "or",
+        "args": [
+          { "op": "eq", "field": "process_name", "value": "shred" },
+          { "op": "and", "args": [
+            { "op": "eq", "field": "process_name", "value": "rm" },
+            { "op": "contains", "field": "cmdline", "value": "/var/log" }
+          ]}
+        ]
+      }
+    },
+    {
+      "id": "HOST-MODULE-LOAD",
+      "description": "kernel module load",
+      "category": "rootkit",
+      "severity": "critical",
+      "decision": "alert",
+      "action": "log",
+      "priority": 15,
+      "when": { "op": "starts_with", "field": "event_kind", "value": "module" }
+    },
+    {
+      "id": "HOST-BPF-OP",
+      "description": "bpf() syscall observed",
+      "category": "rootkit",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 25,
+      "when": { "op": "eq", "field": "event_kind", "value": "bpf_op" }
+    },
+    {
+      "id": "HOST-SHADOW-READ",
+      "description": "read of /etc/shadow",
+      "category": "file",
+      "severity": "critical",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 5,
+      "when": { "op": "eq", "field": "file_path", "value": "/etc/shadow" }
+    },
+    {
+      "id": "HOST-GSHADOW-READ",
+      "description": "read of /etc/gshadow",
+      "category": "file",
+      "severity": "critical",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 6,
+      "when": { "op": "eq", "field": "file_path", "value": "/etc/gshadow" }
+    },
+    {
+      "id": "HOST-LDSO-PRELOAD",
+      "description": "modification of /etc/ld.so.preload",
+      "category": "file",
+      "severity": "critical",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 7,
+      "when": { "op": "eq", "field": "file_path", "value": "/etc/ld.so.preload" }
+    },
+    {
+      "id": "HOST-SSH-AUTHORIZED-KEYS",
+      "description": "SSH authorized_keys write (persistence)",
+      "category": "file",
+      "severity": "critical",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 8,
+      "when": { "op": "ends_with", "field": "file_path", "value": "/authorized_keys" }
+    },
+    {
+      "id": "HOST-CRON-PERSIST",
+      "description": "cron dropped persistence",
+      "category": "file",
+      "severity": "high",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "priority": 9,
+      "when": {
+        "op": "or",
+        "args": [
+          { "op": "starts_with", "field": "file_path", "value": "/etc/cron.d/" },
+          { "op": "starts_with", "field": "file_path", "value": "/var/spool/cron/" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-TMP-DROP",
+      "description": "file created under /tmp",
+      "category": "file",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "priority": 55,
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "create" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/" }
+        ]
+      }
+    },
+    {
+      "id": "HOST-IOURING-FILEOP",
+      "description": "file mutation via io_uring (bypasses syscall tracepoints)",
+      "category": "file",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "priority": 30,
+      "when": {
+        "op": "in",
+        "field": "file_op",
+        "value": "vfs_unlink,vfs_rename,vfs_rename_to"
+      }
+    }
+  ],
+  "sequences": [
+    {
+      "id": "HOST-SEQ-DOWNLOAD-EXEC",
+      "description": "download followed by shell execution",
+      "category": "process",
+      "severity": "high",
+      "decision": "block",
+      "action": "kill",
+      "priority": 12,
+      "within_sec": 30,
+      "same_pid": false,
+      "stages": [
+        { "op": "in", "field": "process_name", "value": "curl,wget" },
+        { "op": "in", "field": "process_name", "value": "bash,sh,dash" }
+      ]
+    }
+  ]
+}

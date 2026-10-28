@@ -1,0 +1,41 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "DBG-ALL",
+      "description": "catch-all for the M8.1 demo",
+      "category": "process",
+      "severity": "low",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "contains", "field": "process_name", "value": "" }
+    },
+    {
+      "id": "T1059-001-shell",
+      "description": "shell execution (taggable)",
+      "category": "process",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "eq", "field": "process_name", "value": "bash" }
+    },
+    {
+      "id": "T1105-001-ingress",
+      "description": "file transfer tool (taggable)",
+      "category": "process",
+      "severity": "medium",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "in", "field": "process_name", "value": "cp,wget,curl" }
+    },
+    {
+      "id": "T1036-001-masquerade",
+      "description": "possible masquerade candidate",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "eq", "field": "process_name", "value": "sleep" }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "T1036-masquerade-kworker",
+      "description": "process masquerading as a kernel worker",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "starts_with", "field": "process_name", "value": "kworker" }
+    }
+  ]
+}

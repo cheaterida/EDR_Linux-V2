@@ -1,0 +1,30 @@
+{
+  "queue_size": 1024,
+  "webhooks": [
+    {
+      "url": "https://hooks.example.internal/edr",
+      "format": "generic",
+      "min_severity": "high",
+      "headers": { "X-EDR-Channel": "lab" },
+      "timeout_sec": 5
+    }
+  ],
+  "syslog": {
+    "enabled": false,
+    "network": "udp",
+    "address": "127.0.0.1:514",
+    "facility": 3,
+    "min_severity": "medium"
+  },
+  "email": {
+    "enabled": false,
+    "host": "smtp.example.internal",
+    "port": 587,
+    "username": "edr@example.internal",
+    "password": "$EDR_SMTP_PASSWORD",
+    "from": "edr@example.internal",
+    "to": ["soc@example.internal"],
+    "use_tls": true,
+    "min_severity": "critical"
+  }
+}

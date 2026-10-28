@@ -1,0 +1,24 @@
+[Unit]
+Description=EDR audit operations center
+Documentation=file:/opt/edr/docs/DEPLOY-LAB.md
+After=network.target
+
+[Service]
+Type=simple
+Environment=EDR_CENTER_LISTEN=127.0.0.1:7080
+EnvironmentFile=-/etc/edr/center.env
+ExecStart=/opt/edr/bin/edr-center --listen $EDR_CENTER_LISTEN \
+    --data-dir /var/lib/edr-center \
+    --shared-secret-file /etc/edr/center.secret
+Restart=on-failure
+RestartSec=3
+StateDirectory=edr-center
+StateDirectoryMode=0750
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/edr-center
+
+[Install]
+WantedBy=multi-user.target

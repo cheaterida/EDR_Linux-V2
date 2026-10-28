@@ -1,0 +1,17 @@
+[Unit]
+Description=EDR datapath (fanotify synchronous decisions + response primitives)
+Documentation=file:/opt/edr/docs/DEPLOY-LAB.md
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/edr/bin/edr-datapath --socket /run/edr/datapath.sock --watch /etc --watch /tmp --watch /root/.ssh
+Restart=on-failure
+RestartSec=3
+RuntimeDirectory=edr
+RuntimeDirectoryMode=0750
+# fanotify requires CAP_SYS_ADMIN; other hardening left minimal on purpose.
+ProtectClock=yes
+
+[Install]
+WantedBy=multi-user.target

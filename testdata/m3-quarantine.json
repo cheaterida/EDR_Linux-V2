@@ -1,0 +1,20 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "M3-QUARANTINE-DROP",
+      "description": "M3 smoke: quarantine files created under /tmp/edr-q/",
+      "category": "file",
+      "severity": "high",
+      "decision": "block",
+      "action": "quarantine",
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "create" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/edr-q/" }
+        ]
+      }
+    }
+  ]
+}

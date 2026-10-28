@@ -1,0 +1,35 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "M1-CMDLINE-ECHO",
+      "description": "M1 enrich smoke: echo invoked with a marker argument",
+      "category": "process",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "process_name", "value": "echo" },
+          { "op": "contains", "field": "cmdline", "value": "edr-marker-hello" }
+        ]
+      }
+    },
+    {
+      "id": "M1-UNLINK-TMP",
+      "description": "M1 file smoke: file removed under /tmp",
+      "category": "file",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "unlinkat" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/" }
+        ]
+      }
+    }
+  ]
+}

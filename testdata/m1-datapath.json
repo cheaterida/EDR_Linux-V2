@@ -1,0 +1,20 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "M1-DENY-WATCH",
+      "description": "M1 datapath smoke: deny opens under the watched directory",
+      "category": "file",
+      "severity": "high",
+      "decision": "block",
+      "action": "fanotify_deny",
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "open" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/edr-watch/" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "v2.0",
+  "rules": [
+    {
+      "id": "M1-EXEC-ID",
+      "description": "M1 smoke: exec of the id binary",
+      "category": "process",
+      "severity": "low",
+      "decision": "alert",
+      "action": "log",
+      "when": { "op": "eq", "field": "process_name", "value": "id" }
+    },
+    {
+      "id": "M1-UNLINK-TMP",
+      "description": "M1 smoke: file removed under /tmp",
+      "category": "file",
+      "severity": "high",
+      "decision": "alert",
+      "action": "log",
+      "when": {
+        "op": "and",
+        "args": [
+          { "op": "eq", "field": "file_op", "value": "unlinkat" },
+          { "op": "starts_with", "field": "file_path", "value": "/tmp/" }
+        ]
+      }
+    }
+  ]
+}
